@@ -1,8 +1,8 @@
 import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient({
+const prismaClient = new PrismaClient({
     errorFormat: 'pretty',
     log: ["query", "info", "warn", "error"]
 })
 
-export default prisma
+export default prismaClient

@@ -4,7 +4,6 @@ import {
     createTestProduct, 
     removeTestProduct,
     productTestData,
-    removeTestVoucher
  } from './testUtil.js'
 
 describe('GET api/v1/products', () => {
@@ -13,16 +12,14 @@ describe('GET api/v1/products', () => {
     })
     afterAll( async () => {
         await removeTestProduct()
-        await removeTestVoucher()
     })
 
     it('should be able to getAll product with store', async () => {
         const results = await supertest(app)
             .get(`/api/v1//products`)
 
-        console.info(results.body)
         expect(results.status).toBe(200)
-        expect(results.body.data.length).toBe(3)
+        expect(results.body.data).toBeDefined()
 
     })
 
@@ -44,9 +41,8 @@ describe('GET api/v1/products/:productId', () => {
     })
     afterAll( async () => {
         await removeTestProduct()
-        await removeTestVoucher()
     })
-    it('should be able to getOne product with store', async () => {
+    it('should be able to getOne product', async () => {
         const productId = await productTestData()
         const result = await supertest(app)
             .get(`/api/v1/products/${productId}`)

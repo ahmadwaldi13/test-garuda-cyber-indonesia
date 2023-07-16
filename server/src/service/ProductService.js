@@ -3,11 +3,7 @@ import ResponseError from '../error/ResponseError.js'
 
 export default class ProductService {
     static getAllProduct = async () => {
-        const results = await prismaClient.product.findMany({
-            include: {
-                voucher: true
-            }
-        })
+        const results = await prismaClient.product.findMany()
         if(results.length === 0) {
             throw new ResponseError(404, 'Product not found')
         }
@@ -19,9 +15,6 @@ export default class ProductService {
         const result = await prismaClient.product.findUnique({
             where: {
                 id: +productId
-            },
-            include: {
-                voucher: true
             }
         })
         if(!result) {

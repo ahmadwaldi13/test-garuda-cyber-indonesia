@@ -1,12 +1,13 @@
 import { Router } from 'express'
 import product from './product.js'
-import customer from './customer.js'
 import voucher from './voucher.js'
+import CustomerController from '../controller/CustomerController.js'
 
 const appRouter = Router()
 
 appRouter.use('/products', product)
-appRouter.use('/customer', customer)
-appRouter.use('/useVoucher', voucher)
+appRouter.use('/register', CustomerController.register)
+appRouter.use('/login', CustomerController.login)
+appRouter.use('/voucher', voucher)
 
 export default appRouter

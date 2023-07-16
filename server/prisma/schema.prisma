@@ -15,27 +15,26 @@ model Customer {
   username String @unique @db.VarChar(100)
   email    String @unique @db.VarChar(100)
   phone    String @db.VarChar(100)
+  password String @db.VarChar(100)
 
   @@map("customers")
 }
 
 model Product {
-  id         Int      @id @default(autoincrement())
-  name       String   @db.VarChar(100)
-  price      Int      @db.Int
-  quantity   Int      @db.Int
-  voucher_id Int?     @db.Int
-  voucher    Voucher? @relation(fields: [voucher_id], references: [id])
+  id       Int    @id @default(autoincrement())
+  name     String @db.VarChar(100)
+  price    Int    @db.Int
+  quantity Int    @db.Int
 
   @@map("products")
 }
 
 model Voucher {
-  id           Int       @id @default(autoincrement())
-  code_voucher String    @unique @db.VarChar(255)
-  is_default   Boolean?  @default(false) @db.TinyInt
-  createdAt    DateTime? @db.DateTime()
-  product      Product[]
+  id              Int      @id @default(autoincrement())
+  code_voucher    String   @unique @db.VarChar(255)
+  is_default      Boolean? @default(false) @db.TinyInt
+  start_voucher   DateTime @db.DateTime()
+  expired_voucher DateTime @db.DateTime()
 
   @@map("voucher")
 }
