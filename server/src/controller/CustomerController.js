@@ -15,9 +15,11 @@ export default class CustomerController {
     static login = async (req, res, next) => {
         try {
             const result = await CustomerService.login(req.body)
-            res.cookie('authorization', result, {
-                httpOnly: true,
-                maxAge: 24 * 60 * 60 * 1000 // 10 * 1000
+            res.cookie('customerId', result.customerId)
+            res.cookie('token', result.token, {
+                httpOnly: false,
+                path: '/',
+                maxAge: 24 * 60 * 60 * 1000
             }).end()
         } catch (err) {
             next(err)

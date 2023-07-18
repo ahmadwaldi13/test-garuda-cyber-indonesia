@@ -9,11 +9,8 @@ module.exports = {
     extend: {
       colors: {
         dark: "#1D2530",
-        secondary: "#E5CDA7",
-      },
-      fontFamily: {
-        quickSand: ["Quicksand"],
-      },
+        secondary: "#F5F5F5",
+      }
     },
   },
   plugins: [],

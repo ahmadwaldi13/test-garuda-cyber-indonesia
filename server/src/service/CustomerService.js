@@ -79,6 +79,8 @@ export default class CustomerService {
         { 
             expiresIn: '24h' 
         })
-        return token
+        return {
+            token, customerId: customer.id
+        }
     }
 }

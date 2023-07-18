@@ -3,7 +3,7 @@ import { useState, useEffect, Fragment } from 'react';
 import axios from 'axios';
 
 const Dashboard = () => {
-  const [products, setProducts] = useState();
+  const [products, setProducts] = useState()
 
   function formatCurrency(number) {
     const formatter = new Intl.NumberFormat('id-ID', {
@@ -12,20 +12,20 @@ const Dashboard = () => {
       minimumFractionDigits: 0,
     });
   
-    return formatter.format(number);
+    return formatter.format(number)
   }
 
   const fetchDataProducts = async () => {
-      const response = await axios.get("http://localhost:5000/api/v1/products");
+      const response = await axios.get("http://localhost:5000/api/v1/products")
       setProducts(response.data.data);
   };
 
   useEffect(() => {
-    fetchDataProducts();
+    fetchDataProducts()
   }, []);
 
   const handleOnClick = (productId) => {
-    window.location.href = `/products/${productId}`;
+    window.location.href = `/products/${productId}`
   };
 
   return (
@@ -40,7 +40,7 @@ const Dashboard = () => {
             >
               <div className="overflow-hidden relative h-[200px] before:content-[''] before:absolute before:top-0 before:bottom-0 before:left-0 before:right-0 before:bg-gradient-to-t from-black from-5% before:z-10">
                 <img
-                  src={`https://source.unsplash.com/1600x900/?technology&${product.name}`}
+                  src={`https://source.unsplash.com/1600x900/?guitar&${product.name}`}
                   alt=""
                   className="absolute transition-all duration-[0.4s] group-hover:scale-125"
                 />
@@ -60,7 +60,7 @@ const Dashboard = () => {
                 </h1>
                 <button
                   onClick={() => handleOnClick(product.id)}
-                  className="bg-white border border-gray-300 rounded-full px-10 py-3 text-sm font-semibold tracking-[2px] duration-300 transition-all hover:bg-primary hover:text-secondary"
+                  className="bg-white border border-gray-300 rounded-full px-10 py-3 text-sm font-semibold tracking-[2px] duration-300 transition-all hover:bg-dark hover:text-secondary"
                 >
                   ORDER
                 </button>
@@ -69,7 +69,7 @@ const Dashboard = () => {
           ))}
       </div>
     </Fragment>
-  );
-};
+  )
+}
 
 export default Dashboard;

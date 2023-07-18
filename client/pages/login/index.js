@@ -1,21 +1,21 @@
 import React, { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/router";
+import Link from "next/link"
+import { useRouter } from "next/router"
 import axios from "axios";
 import Cookies from "js-cookie";
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import "react-toastify/dist/ReactToastify.css"
 
 const Login = () => {
-  const [showStatus, setShowStatus] = useState(false);
+  const [showStatus, setShowStatus] = useState(false)
 
   const togglePassword = () => {
-    setShowStatus(!showStatus);
+    setShowStatus(!showStatus)
   };
 
   // Data Form
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("")
   // Data Form End
 
   const router = useRouter();
@@ -26,45 +26,25 @@ const Login = () => {
       const dataForm = {
         email,
         password,
-      };
+      }
 
-      const response = await axios.post(`http://localhost:5000/api/login`, dataForm);
-
-      axios.defaults.headers.common["authorization"] = response.data.data;
-      Cookies.set("token", response.data.data, {
-        expires: 1
-      });
-
-      Cookies.set("name", response.data.name, {
-        expires: 1
+      const response = await axios.post(`http://localhost:5000/api/v1/login`, dataForm, {
+        withCredentials: true
       })
 
-      Cookies.remove("user_id");
 
       toast.success("Login successful");
-      router.push("http://localhost:3000/"); // Redirect to desired page
+      router.push("http://localhost:3000/")
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response.data.errors);
     }
   };
 
   return (
-    <div className="grid grid-rows-[1fr,3fr] lg:grid-rows-1 lg:grid-cols-2 h-screen overflow-hidden bg-dark font-quickSand">
-      {/* Left */}
-      <div className="lg:relative flex justify-center items-center lg:rounded-br-[90px]">
-        <div className="flex flex-col lg:flex-row justify-center items-center gap-3">
-          <h1 className="lg:order-2 text-5xl font-bold text-white">
-            Tech<span className="text-secondary"> Universe</span>
-          </h1>
-        </div>
-        <div className="hidden lg:block lg:absolute bottom-0 right-0 h-[100px] w-[100px] bg-white"></div>
-        <div className="hidden lg:block lg:absolute bottom-0 right-0 h-[100px] w-[100px] bg-primary rounded-br-[90px] "></div>
-      </div>
-      {/* Left End */}
-
+    <div className="flex justify-center items-center h-screen overflow-hidden font-quickSand">
       {/* Right */}
       <div className="bg-white flex flex-col justify-center px-14 lg:px-20 rounded-tl-[90px]">
-        <h1 className="text-2xl font-bold mb-6">Masuk</h1>
+        <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
         <form onSubmit={handleSubmit} className="flex flex-col">
           {/* Email Input */}
           <div className="relative w-full flex items-center mb-4">
@@ -132,16 +112,16 @@ const Login = () => {
         <p className="self-center my-2 text-sm font-bold">Or</p>
 
         <p className="self-center text-sm font-medium">
-          Belum punya akun?{" "}
+        Don't have an account yet?{" "}
           <Link href="/register" className="underline font-bold text-primary">
-            Daftar di sini
+          Register here
           </Link>
         </p>
       </div>
       {/* Right End */}
       <ToastContainer />
     </div>
-  );
-};
+  )
+}
 
 export default Login;

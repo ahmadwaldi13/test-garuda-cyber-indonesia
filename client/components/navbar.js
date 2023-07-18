@@ -1,21 +1,23 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import Cookies from 'js-cookie';
+import Cookies from 'js-cookie'
+import { useRouter } from 'next/router'
 
 const Navbar = () => {
-  const [userName, setUserName] = useState('')
+  const [token, setToken] = useState('')
 
   useEffect(() => {
-    const nameFromCookie = Cookies.get('name')
-    if (nameFromCookie) {
-      setUserName(nameFromCookie)
+    const token = Cookies.get('token')
+    if (token) {
+      setToken(token)
     }
   }, []);
-
+  const router = useRouter()
   const handleLogout = () => {
-    Cookies.remove('name')
     Cookies.remove('token')
-    setUserName('')
+    Cookies.remove('customerId')
+    setToken(undefined)
+    router.push('/')
   };
 
   return (
@@ -25,16 +27,13 @@ const Navbar = () => {
           <li>
             <Link href="/">
               <button className="text-white text-sm font-bold sm:text-2xl">
-                Kewai
+              Proxima
               </button>
             </Link>
           </li>
           <li className="flex items-center">
-            {userName ? (
+            {token ? (
               <>
-                <h1 className="text-white text-sm font-bold sm:text-2xl">
-                  Hi <span className="text-secondary">{userName}!</span>
-                </h1>
                 <button
                   className="text-primary text-sm  bg-secondary font-bold sm:text-sm ml-4 border border-white rounded-lg px-3 py-1"
                   onClick={handleLogout}
@@ -44,7 +43,7 @@ const Navbar = () => {
               </>
             ) : (
               <Link href="/login">
-                <button className="text-secondary bg-white inline-block rounded-full pb-1 px-6 text-sm font-bold sm:text-2xl">
+                <button className="text-dark bg-white inline-block rounded-full pb-1 px-3 text-sm font-bold sm:text-1.5xl">
                   Login
                 </button>
               </Link>

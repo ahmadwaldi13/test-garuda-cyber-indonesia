@@ -11,53 +11,22 @@ const productDetail = () => {
     const [use, setUse]= useState("Use")
     const [useError, setUseError] = useState()
     const [id, setId] = useState()
-    let [total, setTotal] = useState()
+    let [total, setTotal] = useState(1)
     const [totalPrice, setTotalPrice] = useState(0)
     const [priceVoucher, setPriceVoucher] = useState(0)
-    const [codeVoucher, setCodeVoucher] = useState()
     const [active, setActive]= useState(false)
     const [voucher, setVoucher] = useState()
     const router = useRouter()
     const token = Cookies.get("token")
+    const customerId = Cookies.get('customerId')
 
-    let productId;
-
-    // const fetchVoucher= async() => {
-    //   const authorization = Cookies.get("token");
-    //   const id = Cookies.get("user_id");
-    //   if(authorization){
-    //     axios.defaults.headers.common["authorization"] = Cookies.get("token");
-    //     const response = await axios.get("http://localhost:5000/api/voucher");
-    //     setVoucher(response.data.data);
-    //     if(response.data.data.is_default == false){
-    //       setUse(response.data.use)
-    //     }
-    //   } else if(id){
-    //     axios.defaults.headers.common["user_id"] = Cookies.get("user_id");
-    //     const response = await axios.get("http://localhost:5000/api/voucher");
-    //     setVoucher(response.data.data);
-    //     if(response.data.data.is_default == false){
-    //       setUse(response.data.use)
-    //     }
-    //   } else {
-    //     const response = await axios.get("http://localhost:5000/api/voucher");
-    //     Cookies.set("user_id", response.data.id, {
-    //       expires: 1
-    //     });
-    //     setVoucher(response.data.data);
-    //   }
-    // }
-  
-    // useEffect(()=> {
-    //   fetchVoucher();
-    // }, [])
+    let productId
     
     const fetchProduct = async () => {
       if (router.query.id) {
         productId = router.query.id
         const response = await axios.get(`http://localhost:5000/api/v1/products/${productId}`)
         setProducts(response.data.data)
-        setTotal(response.data.data.total)
         setTotalPrice(response.data.data.price)
         setId(response.data.data.id)
         setVoucher(response.data.data.code_voucher)
@@ -66,7 +35,7 @@ const productDetail = () => {
     
     useEffect(() => {
       fetchProduct();
-    }, [router.query.id]);
+    }, [router.query.id])
 
     useEffect(()=> {
       if(totalPrice >= 2000000){
@@ -81,19 +50,19 @@ const productDetail = () => {
           style: 'currency',
           currency: 'IDR',
           minimumFractionDigits: 0,
-        });
+        })
     
-        return formatter.format(number);
+        return formatter.format(number)
       }
     
-      function handleAddProductPlus(products) {
-        console.info()
+      function handleAddProductPlus() {
+        console.info(products)
         total += 1
-        setTotal(total);
-        setTotalPrice(products.price * total);
+        setTotal(total)
+        setTotalPrice(products.price * total)
       }
 
-      function handleAddProductMinus(products) {
+      function handleAddProductMinus() {
         if(total > 1 ){
           total -= 1
           setTotal(total)
@@ -101,13 +70,11 @@ const productDetail = () => {
         };
       }
 
-      async function handleClickBayar(){
+      async function handleClickPay(){
         if (!token) {
           toast.error("anda harus login");
           router.push("/login");
         } else {
-        axios.defaults.headers.common["authorization"] = token;
-        await axios.post("http://localhost:5000/api/product/buy", {total_price:totalPrice, id})
         router.push("/succes")
         }
       }
@@ -116,26 +83,27 @@ const productDetail = () => {
         window.location.href = "/";
       }
 
-      async function handleClickGunakan(){
+      async function handleClickUse(){
         try {
-          const result = await axios.post('http://localhost:5000/api/v1/voucher', {
-            customer_id: undefined,
-            code_voucher: voucher,
-            total_price: totalPrice,
-          }, {
-            headers: {
-              'Content-Type': 'application/json'
+          if(totalPrice >= 200000) {
+            const result = await axios.post('http://localhost:5000/api/v1/voucher', {
+              customer_id: customerId ? customerId : undefined,
+              code_voucher: voucher,
+              total_price: totalPrice,
+            }, {
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            })
+            if (result.status === 200) {
+              setTotalPrice(result.data.data.resultVoucher)
+              setPriceVoucher(result.data.data.voucher)
+              setUse('voucher used')
             }
-          })
-          console.info(result)
-          if (result.status === 200) {
-            setTotalPrice(result.data.data.resultVoucher)
-            setPriceVoucher(result.data.data.voucher)
-            setUse('voucher used')
           }
         } catch (error) {
-          console.info(error)
           setUseError(error.response.data.errors)
+          toast.error(useError)
         }
       }
     return (
@@ -169,14 +137,15 @@ const productDetail = () => {
                 </div>
                
               </div>
-            <h1>{useError}</h1>
+            <h1>{}</h1>
             <div className="bg-dark to-teal-500 rounded-lg shadow-lg p-6">
               <div className="flex items-center justify-between mb-4">
                   <h1 className="text-white text-sm font-medium">VOUCHER 10K</h1>
-                  <button
-                    onClick={handleClickGunakan}
+
+                  {use === 'Use' ? <button
+                    onClick={handleClickUse}
                     className="text-primary bg-white inline-block px-4 py-2 rounded-full text-sm font-semibold"
-                  >{use}</button>
+                  >{use}</button> : <h1 className='text-white'>{use}</h1>}
                 </div>
                 <div className="border-t border-white pt-2">
                   <p className="text-white text-sm font-medium">Start Date: {products?.voucher.start_voucher.split("T")[0]}</p>
@@ -200,34 +169,24 @@ const productDetail = () => {
                 className="flex p-2 justify-center items-center bg-dark rounded-full text-secondary font-medium text-2xl text-center"
             ><img src="/minus-icon.svg" className='w-7'/></button>
             </div>
-              
+            <div className="flex items-center gap-12 px-2 py-2 justify-center rounded-lg">
               <div className="flex w-full justify-between items-center px-3 py-5 bg-gray-200 rounded-lg">
                 <h1 className="text-black text-lg font-medium">Voucher</h1>
-                <h1 className="text-black text-lg font-semibold">{formatCurrency(priceVoucher)}</h1>
+                <h1 className="text-black text-lg font-semibold">{priceVoucher ? formatCurrency(priceVoucher) : '-'}</h1>
               </div>
               <div className="flex w-full justify-between items-center px-3 py-5 bg-gray-200 rounded-lg">
                 <h1 className="text-black text-lg font-medium">Order Total</h1>
                 <h1 className="text-black text-lg font-semibold">{formatCurrency(totalPrice)}</h1>
               </div>
-
+              </div>
               
 
-            <div className="flex justify-between gap-2 px-3 py-5 bg-gray-200 rounded-lg">
-    
-                <button  onClick={() => handleClickBayar()} 
-                 className="flex w-[100px] justify-center items-center bg-dark px-4 py-2 rounded-lg">
-                  <div
-                  className="text-secondary text-sm font-bold"
-                  >Pay</div>
-                </button>
+              <div className="flex justify-center gap-2 px-3 py-5 rounded-lg">
+  <button onClick={() => handleClickPay()} className="flex w-full justify-center items-center bg-dark px-4 py-2 rounded-lg">
+    <div className="text-secondary text-sm font-bold">Pay</div>
+  </button>
+</div>
 
-                <button  onClick={() => handleClickKembali()} 
-                 className="flex w-[100px] justify-center items-center bg-dark px-4 py-2 rounded-lg">
-                  <div
-                  className="text-secondary text-sm font-bold"
-                  >Back</div>
-                </button>
-              </div>
             </div>
           </div>
           <ToastContainer />
