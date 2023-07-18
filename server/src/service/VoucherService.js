@@ -3,38 +3,6 @@ import ResponseError from '../error/ResponseError.js'
 
 export default class VoucherService {
 
-    static getVoucher = async () => {
-        
-        const startVoucher = new Date('2023-07-19T10:00:00')
-        const expirationDateVoucher = new Date(startVoucher.getFullYear(), startVoucher.getMonth() + 3, startVoucher.getDate(), startVoucher.getHours(), startVoucher.getMinutes(), startVoucher.getSeconds()).toISOString()
-        const formatCreatedAt = startVoucher.toISOString()
-
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-        let voucherCode = ''
-        for (let i = 0; i < 10; i++) {
-          const randomIndex = Math.floor(Math.random() * characters.length)
-          voucherCode += characters.charAt(randomIndex)
-        }
-        
-        const checkVoucher = await prismaClient.voucher.findMany()
-        if(checkVoucher.length >= 10) {
-            await prismaClient.voucher.deleteMany({
-                where: {
-                    is_default: false,
-                }
-            })
-        }
-        const voucher = await prismaClient.voucher.create({
-            data: {
-                code_voucher: voucherCode,
-                start_voucher: formatCreatedAt,
-                expired_voucher: expirationDateVoucher
-            }
-        })
-        
-        return voucher
-    }
-
     static useVoucher = async (request) => {
 
         if(request.total_price < 2000000) {
@@ -42,16 +10,26 @@ export default class VoucherService {
         }
         const voucher = await prismaClient.voucher.findUnique({
             where: {
-                id: +request.voucherId,
+                code_voucher: request.code_voucher,
             },
             select: {
+                code_voucher: true,
                 start_voucher: true,
-                expired_voucher: true,
-                is_default: true
+                expired_voucher: true
             }
         })
-        if(voucher.is_default === true) {
-            throw new ResponseError(400, 'Voucher has been used')
+        if(request.customer_id) {
+            const checkCustomerUseVoucher = await prismaClient.customer.findUnique({
+                where: {
+                    id: +request.customer_id
+                },
+                select: {
+                    code_voucher: true,
+                }
+            })
+            if(checkCustomerUseVoucher && checkCustomerUseVoucher.code_voucher === request.code_voucher) {
+                throw new ResponseError(400, 'Voucher has been used')
+            }
         }
 
         const startVoucher = new Date(voucher.start_voucher)
@@ -62,15 +40,18 @@ export default class VoucherService {
         }
 
        const resultVoucher = request.total_price - 100000
-       await prismaClient.voucher.update({
-        data: {
-            is_default: true,
-        },
-        where: {
-            id: +request.voucherId
-        }
-       })
+       if(request.customer_id) {
+        await prismaClient.customer.update({
+            data: {
+                code_voucher: request.code_voucher
+            },
+            where: {
+               id : +request.customer_id
+            }
+           })
+       }
        return {
+            customer_id: request.customer_id,
             resultVoucher: resultVoucher,
             voucher: 100000
        }

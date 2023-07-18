@@ -21,6 +21,10 @@ describe('GET api/v1/products', () => {
         expect(results.status).toBe(200)
         expect(results.body.data).toBeDefined()
 
+        results.body.data.forEach((result) => {
+            expect(result.code_voucher).toBeDefined()
+        })
+
     })
 
     it('should be able to not found products', async () => {
@@ -52,12 +56,13 @@ describe('GET api/v1/products/:productId', () => {
         expect(result.body.data).toHaveProperty('name')
         expect(result.body.data).toHaveProperty('price')
         expect(result.body.data).toHaveProperty('quantity')
+        expect(result.body.data).toHaveProperty('code_voucher')
 
     })
     it('should be able to not found product', async () => {
         const result = await supertest(app)
             .get(`/api/v1/products/${10}`)
-        console.info(result.body)
+            
         expect(result.status).toBe(404)
         expect(result.body.errors).toBe('Product not found')
 

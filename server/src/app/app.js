@@ -3,13 +3,15 @@ import appRouter from '../routes/index.js'
 import { errorMiddleware } from '../middleware/errorMiddleware.js'
 import cookieParser from 'cookie-parser'
 import dotenv from 'dotenv'
+import { createProduct } from '../middleware/hooks.js'
 
 const app = express()
 dotenv.config()
 
 app.use(express.json())
 app.use(cookieParser())
-app.use('/api/v1', appRouter)
+// await createProduct()
+app.use('/api/v1', appRouter) 
 app.use(errorMiddleware)
 
 

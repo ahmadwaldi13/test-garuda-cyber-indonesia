@@ -11,30 +11,34 @@ datasource db {
 }
 
 model Customer {
-  id       Int    @id @default(autoincrement())
-  username String @unique @db.VarChar(100)
-  email    String @unique @db.VarChar(100)
-  phone    String @db.VarChar(100)
-  password String @db.VarChar(100)
+  id           Int      @id @default(autoincrement())
+  username     String   @unique @db.VarChar(100)
+  email        String   @unique @db.VarChar(100)
+  phone        String   @db.VarChar(100)
+  password     String   @db.VarChar(100)
+  code_voucher String?  @db.VarChar(100)
+  voucher      Voucher? @relation(fields: [code_voucher], references: [code_voucher])
 
   @@map("customers")
 }
 
 model Product {
-  id       Int    @id @default(autoincrement())
-  name     String @db.VarChar(100)
-  price    Int    @db.Int
-  quantity Int    @db.Int
+  id           Int      @id @default(autoincrement())
+  name         String   @db.VarChar(100)
+  price        Int      @db.Int
+  quantity     Int      @db.Int
+  code_voucher String?  @db.VarChar(100)
+  voucher      Voucher? @relation(fields: [code_voucher], references: [code_voucher])
 
   @@map("products")
 }
 
 model Voucher {
-  id              Int      @id @default(autoincrement())
-  code_voucher    String   @unique @db.VarChar(255)
-  is_default      Boolean? @default(false) @db.TinyInt
-  start_voucher   DateTime @db.DateTime()
-  expired_voucher DateTime @db.DateTime()
+  code_voucher    String     @id @unique @db.VarChar(255)
+  start_voucher   DateTime   @db.DateTime()
+  expired_voucher DateTime   @db.DateTime()
+  customer        Customer[]
+  product         Product[]
 
   @@map("voucher")
 }

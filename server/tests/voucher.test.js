@@ -3,90 +3,116 @@ import app from '../src/app/app.js'
 import { 
     removeTestProduct,
     removeTestVoucher,
-    createTestVoucher,
+    createTestForUseVoucherNotLogin,
+    createTestForUseVoucherLogin,
     updateTestVoucher,
     createTestVoucherExp,
-    createTestForUseVoucher
+    createTestVoucherExpLogin,
+    removeTestCustomer,
+    createTestForUseVoucherLoginErr
  } from './testUtil.js'
-
-describe('GET api/v1/voucher', () => {
-    afterAll( async () => {
-        await removeTestVoucher()
-    })
-    beforeAll(async () => {
-        await createTestVoucher()
-    })
-    it('it should can get a voucher', async () => {
-        const result = await supertest(app)
-            .get('/api/v1/voucher')
-        expect(result.status).toBe(200)
-        expect(result.body.data.code_voucher).toBeDefined()
-        expect(result.body.data.is_default).toBeDefined()
-        expect(result.body.data.start_voucher).toBeDefined()
-        expect(result.body.data.expired_voucher).toBeDefined()
-
-    })
-
-    it('should create vouchers after vocher length 10', async () => {
-        const result = await supertest(app)
-            .get('/api/v1/voucher')
-        
-        expect(result.status).toBe(200)
-        expect(result.body.data).toBeDefined()
-
-    })
-})
 
 
 describe('POST api/v1/voucher', () => {
     afterAll( async () => {
         await removeTestProduct()
         await removeTestVoucher()
+        await removeTestCustomer()
     })
-    it('should be able use voucher', async () => {
-        const voucher = await createTestForUseVoucher()
+    it('should be able use voucher customer before login', async () => {
+        const voucher = await createTestForUseVoucherNotLogin()
         const result = await supertest(app)
             .post('/api/v1/voucher')
             .send({
                 total_price: 2000000,
-                voucherId: voucher.id
+                code_voucher: voucher.code_voucher
             })
         expect(result.status).toBe(200)
         expect(result.body.data.voucher).toBe(100000)
         expect(result.body.data.resultVoucher).toBe(1900000)
         expect(result.body.data).toHaveProperty('voucher')
         expect(result.body.data).toHaveProperty('resultVoucher')
+        expect(result.body.data.customer_id).toBeUndefined()
 
     })
-    it('should be able to total_price lessthan 2000000', async () => {
-        const voucher = await createTestForUseVoucher()
+
+    it('should be able use voucher customer after login', async () => {
+        const voucher = await createTestForUseVoucherLogin()
         const result = await supertest(app)
             .post('/api/v1/voucher')
             .send({
+                customer_id: voucher.customer.id,
+                total_price: 2000000,
+                code_voucher: voucher.product.code_voucher
+            })
+        expect(result.status).toBe(200)
+        expect(result.body.data.voucher).toBe(100000)
+        expect(result.body.data.resultVoucher).toBe(1900000)
+        expect(result.body.data).toHaveProperty('voucher')
+        expect(result.body.data).toHaveProperty('resultVoucher')
+        expect(result.body.data).toHaveProperty('customer_id')
+
+    })
+
+    it('should be able to total_price lessthan 2000000 after login', async () => {
+        const voucher = await createTestForUseVoucherLoginErr()
+        const result = await supertest(app)
+            .post('/api/v1/voucher')
+            .send({
+                customer_id: voucher.customer.id,
                 total_price: 1000000,
-                voucherId: voucher.id
+                code_voucher: voucher.product.code_voucher
             })
         expect(result.status).toBe(400)
         expect(result.body.errors).toBe('you must buy Rp.2.000.000 to get voucher')
     })
-    it('should be able to is_default voucher together with true', async () => {
+
+    it('should be able to total_price lessthan 2000000 before login', async () => {
+        const voucher = await createTestForUseVoucherNotLogin()
+        const result = await supertest(app)
+            .post('/api/v1/voucher')
+            .send({
+                total_price: 1000000,
+                code_voucher: voucher.code_voucher
+            })
+        expect(result.status).toBe(400)
+        expect(result.body.errors).toBe('you must buy Rp.2.000.000 to get voucher')
+    })
+    
+
+    it('should be able voucher have been used by the customer', async () => {
         const voucher = await updateTestVoucher()
         const result = await supertest(app)
             .post('/api/v1/voucher')
             .send({
+                customer_id: voucher.customer.id,
                 total_price: 2000000,
-                voucherId: voucher.id
+                code_voucher: voucher.product.code_voucher
             })
         expect(result.status).toBe(400)
         expect(result.body.errors).toBe('Voucher has been used')
     })
-    it('should be able to voucher expired', async () => {
+
+    it('should be able to voucher expired before login', async () => {
         const voucher = await createTestVoucherExp()
         const result = await supertest(app)
             .post('/api/v1/voucher')
             .send({
                 total_price: 2000000,
-                voucherId: voucher.id
+                code_voucher: voucher.code_voucher
+            })
+        expect(result.status).toBe(400)
+        expect(result.body.errors).toBe('Voucher expired')
+    })
+
+    it('should be able to voucher expired after login', async () => {
+        const voucher = await createTestVoucherExpLogin()
+        const result = await supertest(app)
+            .post('/api/v1/voucher')
+            .send({
+                customer_id: voucher.customer.id,
+                total_price: 2000000,
+                code_voucher: voucher.product.code_voucher
             })
         expect(result.status).toBe(400)
         expect(result.body.errors).toBe('Voucher expired')
