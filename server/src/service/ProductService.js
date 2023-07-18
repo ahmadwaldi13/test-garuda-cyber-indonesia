@@ -15,6 +15,9 @@ export default class ProductService {
         const result = await prismaClient.product.findUnique({
             where: {
                 id: +productId
+            },
+            include: {
+                voucher: true
             }
         })
         if(!result) {

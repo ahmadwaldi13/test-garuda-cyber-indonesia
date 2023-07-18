@@ -4,7 +4,7 @@ export const createProduct = async () => {
     const result = await prismaClient.product.findMany()
 
     if(result.length === 0) {
-        const startVoucher = new Date('2023-07-19T10:00:00')
+        const startVoucher = new Date('2023-07-17T10:00:00')
         const expirationDateVoucher = new Date(startVoucher.getFullYear(), startVoucher.getMonth() + 3, startVoucher.getDate(), startVoucher.getHours(), startVoucher.getMinutes(), startVoucher.getSeconds()).toISOString()
         const formatCreatedAt = startVoucher.toISOString()
 
@@ -26,20 +26,20 @@ export const createProduct = async () => {
         await prismaClient.product.createMany({
             data: [
                 {
-                    name: 'test product 1',
-                    price: 1000000,
-                    quantity: 100,
+                    name: 'Epiphone DR-100',
+                    price: 2000000,
+                    quantity: 10,
                     code_voucher: voucher.code_voucher,
                 },
                 {
-                    name: 'test product 2',
-                    price: 5000000,
+                    name: 'Yamaha APX 500 ii Akustik dan Elektrik',
+                    price: 600000,
                     quantity: 20,
                     code_voucher: voucher.code_voucher,
                 },
                 {
-                    name: 'test product 3',
-                    price: 2000000,
+                    name: 'Gitar akustik elektrik apx500 ',
+                    price: 500000,
                     quantity: 10,
                     code_voucher: voucher.code_voucher,
                 }

@@ -5,6 +5,7 @@ export default class VoucherService {
 
     static useVoucher = async (request) => {
 
+        
         if(request.total_price < 2000000) {
             throw new ResponseError(400, 'you must buy Rp.2.000.000 to get voucher')
         }
@@ -39,7 +40,7 @@ export default class VoucherService {
         throw new ResponseError(400, 'Voucher expired');
         }
 
-       const resultVoucher = request.total_price - 100000
+       const resultVoucher = request.total_price - 10000
        if(request.customer_id) {
         await prismaClient.customer.update({
             data: {
@@ -53,7 +54,7 @@ export default class VoucherService {
        return {
             customer_id: request.customer_id,
             resultVoucher: resultVoucher,
-            voucher: 100000
+            voucher: 10000
        }
 
     }
