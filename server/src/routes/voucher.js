@@ -1,8 +1,9 @@
 import { Router } from 'express'
-import VoucherController from '../controller/VaucherController.js'
+import VoucherController from "../controller/VaucherController.js"
 
 const voucher = Router()
 
-voucher.post('/', VoucherController.useVoucher)
+voucher.post('/voucher', VoucherController.useVoucher)
+
 
 export default voucher

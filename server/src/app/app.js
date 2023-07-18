@@ -10,7 +10,7 @@ dotenv.config()
 
 app.use(express.json())
 app.use(cookieParser())
-// await createProduct()
+await createProduct()
 app.use('/api/v1', appRouter) 
 app.use(errorMiddleware)
 
