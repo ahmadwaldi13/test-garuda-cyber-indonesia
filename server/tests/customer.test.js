@@ -13,13 +13,14 @@ describe('POST /api/v1/register', () => {
         const result = await supertest(app)
             .post(`/api/v1/register`)
             .send({
-                username: 'Ahmad Waldi Arridho',
+                username: 'Ahmadwaldi12',
                 email: 'ahmad@gmail.com',
                 phone: '+628343973984',
                 password: 'ahmad123'
             })
+        console.info(result.body)
         expect(result.status).toBe(201)
-        expect(result.body.data.username).toBe('Ahmad Waldi Arridho')
+        expect(result.body.data.username).toBe('Ahmadwaldi12')
         expect(result.body.data.email).toBe('ahmad@gmail.com')
         expect(result.body.data.phone).toBe('+628343973984')
     })

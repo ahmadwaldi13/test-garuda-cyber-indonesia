@@ -28,8 +28,8 @@ describe('POST api/v1/voucher', () => {
                 code_voucher: voucher.code_voucher
             })
         expect(result.status).toBe(200)
-        expect(result.body.data.voucher).toBe(100000)
-        expect(result.body.data.resultVoucher).toBe(1900000)
+        expect(result.body.data.voucher).toBe(10000)
+        expect(result.body.data.resultVoucher).toBe(1990000)
         expect(result.body.data).toHaveProperty('voucher')
         expect(result.body.data).toHaveProperty('resultVoucher')
         expect(result.body.data.customer_id).toBeUndefined()
@@ -46,8 +46,8 @@ describe('POST api/v1/voucher', () => {
                 code_voucher: voucher.product.code_voucher
             })
         expect(result.status).toBe(200)
-        expect(result.body.data.voucher).toBe(100000)
-        expect(result.body.data.resultVoucher).toBe(1900000)
+        expect(result.body.data.voucher).toBe(10000)
+        expect(result.body.data.resultVoucher).toBe(1990000)
         expect(result.body.data).toHaveProperty('voucher')
         expect(result.body.data).toHaveProperty('resultVoucher')
         expect(result.body.data).toHaveProperty('customer_id')
